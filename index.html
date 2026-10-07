@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fit</title>
+<meta name="description" content="Your bags, your fit. Paste any Solana wallet and get a pixel character dressed in what it holds: biggest bag on the hoodie, dead coins stitched on, the 24h move on your face.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fitsol.vercel.app/">
+<meta property="og:title" content="fit">
+<meta property="og:description" content="Paste any wallet. Get dressed in your bags.">
+<meta property="og:image" content="https://fitsol.vercel.app/api/og">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="fit">
+<meta name="twitter:description" content="Paste any wallet. Get dressed in your bags.">
+<meta name="twitter:image" content="https://fitsol.vercel.app/api/og">
+<meta name="theme-color" content="#ececf0">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#ececf0;--grid:#e2e2e8;--ink:#14121a;--mut:#5e5d6b;--dim:#8a8a96;--pink:#ff3d8b;--pinkD:#c21f63;--lime:#b9ff3b;--white:#fff;--red:#e5484d;--green:#1f9d57;
+--sans:"Inter Tight","Noto Sans","Liberation Sans",system-ui,sans-serif;--mono:"JetBrains Mono","DejaVu Sans Mono","Liberation Mono",monospace}
+*{box-sizing:border-box}
+html{overflow-x:hidden;scroll-behavior:smooth;background:var(--paper)}
+body{margin:0;overflow-x:clip;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  background-color:var(--paper);background-image:linear-gradient(var(--grid) 2px,transparent 2px),linear-gradient(90deg,var(--grid) 2px,transparent 2px);background-size:48px 48px}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:28px;padding-right:28px}
+.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.box{background:var(--white);border:3px solid var(--ink);box-shadow:7px 7px 0 var(--ink)}
+nav{position:sticky;top:0;z-index:20;background:rgba(236,236,240,.92);backdrop-filter:blur(6px);border-bottom:3px solid var(--ink)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font:900 30px/1 var(--sans);letter-spacing:-.06em;text-decoration:none}
+.brand canvas{width:36px;height:36px;border:2px solid var(--ink)}
+.navlinks{display:flex;gap:22px;margin-left:auto;font:700 15px var(--sans)}
+.navlinks a{text-decoration:none}.navlinks a:hover{color:var(--pink)}
+.chip{font:700 13px var(--mono);padding:8px 12px;border:2px solid var(--ink);background:var(--white);cursor:pointer;white-space:nowrap}
+.chip b{color:var(--pink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:3px solid var(--ink);cursor:pointer;font:800 16px var(--sans);letter-spacing:-.01em;padding:12px 20px;background:var(--pink);color:#fff;box-shadow:4px 4px 0 var(--ink);text-decoration:none;transition:transform .06s,box-shadow .06s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.alt{background:var(--white);color:var(--ink)}
+.btn.lime{background:var(--lime);color:var(--ink)}
+.btn.sm{font-size:14px;padding:9px 14px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--ink)}
+.hero{padding-top:56px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:start}
+h1{margin:0;font:900 clamp(56px,8.4vw,124px)/.9 var(--sans);letter-spacing:-.065em}
+h1 em{font-style:normal;color:var(--pink)}
+.lede{margin:22px 0 0;font-size:21px;color:var(--mut);max-width:520px;letter-spacing:-.01em}
+.lede b{color:var(--ink)}
+.dress{margin-top:30px;display:flex;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);background:var(--white);max-width:560px}
+.dress input{flex:1;min-width:0;border:0;background:none;padding:15px 16px;font:500 15px var(--mono);outline:none}
+.dress input::placeholder{color:var(--dim)}
+.dress button{border:0;border-left:3px solid var(--ink);background:var(--lime);padding:0 22px;font:800 16px var(--sans);cursor:pointer}
+.or{margin-top:18px;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;font:500 14px var(--mono);color:var(--mut)}
+.err{min-height:24px;margin-top:12px;font:500 14px var(--mono);color:var(--red)}
+.room{position:relative}
+.rail{height:8px;background:var(--ink);margin:0 -14px}
+.stage{border:3px solid var(--ink);border-top:0;background:var(--pink);box-shadow:7px 7px 0 var(--ink)}
+.stage canvas{display:block;width:100%;height:auto}
+.receipt{margin-top:22px;padding:18px 20px 16px}
+.receipt .who{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.receipt h2{margin:0;font:900 32px/1.05 var(--sans);letter-spacing:-.04em}
+.receipt .state{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border:2px solid var(--ink);background:var(--paper)}
+.state.drip{background:#ffd34d}.state.live{background:var(--lime)}.state.err{background:#ffd0d4}
+.receipt .addr{font:500 12px var(--mono);color:var(--dim);word-break:break-all;margin-top:4px}
+.rows{margin-top:12px;font:500 14px var(--mono);color:var(--mut)}
+.rows div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:2px dashed #d6d6de}
+.rows b{color:var(--ink);text-align:right}
+.up{color:var(--green)!important}.down{color:var(--red)!important}
+.receipt .actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
+.src{margin-top:12px;font:500 12px var(--mono);color:var(--dim)}
+section.sec{padding-top:110px}
+.sec h2.t{margin:0 0 28px;font:900 clamp(36px,5vw,64px)/.95 var(--sans);letter-spacing:-.055em}
+.sec h2.t span{display:block;margin-bottom:12px;font:700 13px var(--mono);letter-spacing:.12em;color:var(--pink);text-transform:uppercase}
+.rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.rule{padding:0;display:flex;flex-direction:column}
+.rule canvas{display:block;width:100%;height:auto;border-bottom:3px solid var(--ink)}
+.rule .in2{padding:16px 16px 18px}
+.rule .k{font:700 12px var(--mono);letter-spacing:.08em;color:var(--pink);text-transform:uppercase}
+.rule h3{margin:6px 0 6px;font:900 24px/1.05 var(--sans);letter-spacing:-.04em}
+.rule p{margin:0;color:var(--mut);font-size:15px}
+.faces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px;font:700 11px var(--mono);text-align:center;color:var(--mut)}
+.drip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.drip .box{padding:22px}
+.drip p{margin:0 0 14px;font-size:19px;color:var(--mut)}
+.drip p b{color:var(--ink)}
+.perks{margin:0;padding:0;list-style:none;font:500 15px var(--mono)}
+.perks li{padding:9px 0;border-top:2px dashed #d6d6de;display:flex;gap:10px}
+.perks li::before{content:"+";color:var(--pink);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.stat{padding:16px}
+.stat .l{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.stat .v{font:900 30px/1.1 var(--sans);letter-spacing:-.04em;margin-top:4px;word-break:break-all}
+.ca .chip{white-space:normal;word-break:break-all;text-align:left;max-width:100%}
+.ca{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:500 13px var(--mono);color:var(--mut)}
+footer{margin-top:110px;border-top:3px solid var(--ink);background:var(--ink);color:#c9c8d2;padding-top:26px;padding-bottom:40px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center;font:500 14px var(--mono)}
+footer .brand{color:#fff;font-size:26px}
+dialog{border:3px solid var(--ink);box-shadow:7px 7px 0 var(--ink);background:var(--white);color:var(--ink);padding:20px;width:min(380px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(20,18,26,.5)}
+dialog h3{margin:0 0 12px;font:900 22px var(--sans);letter-spacing:-.03em}
+.wl{display:grid;gap:8px}
+.wl button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:2px solid var(--ink);background:var(--paper);cursor:pointer;font-weight:800;text-align:left}
+.wl img{width:28px;height:28px}
+.note{font-size:14px;color:var(--mut)}
+.hidden{display:none!important}
+#how,#drip{scroll-margin-top:84px}
+@media (max-width:980px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:36px}
+  .room{max-width:520px}
+  .rules{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .drip{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .wrap{padding-left:16px;padding-right:16px}
+  .navlinks{display:none}
+  nav .wrap{gap:10px;height:60px}
+  #navCa{margin-left:auto}
+  .brand{font-size:26px}.brand canvas{width:30px;height:30px}
+  .chip{padding:7px 9px;font-size:12px}
+  nav .btn.sm{padding:8px 11px}
+  .hero{padding-top:32px}
+  .lede{font-size:18px}
+  .dress button{padding:0 14px}
+  .rail{margin:0 -8px}
+  .stage{box-shadow:5px 5px 0 var(--ink)}
+  .box{box-shadow:5px 5px 0 var(--ink)}
+  .receipt h2{font-size:26px}
+  .rules{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .rule .in2{padding:12px 12px 14px}.rule h3{font-size:19px}.rule p{font-size:13px}
+  .stats{gap:12px}.stat{padding:12px}.stat .v{font-size:21px}
+  section.sec{padding-top:80px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#top"><canvas id="mark" width="36" height="36" class="px" aria-hidden="true"></canvas>fit</a>
+  <div class="navlinks"><a href="#how">how it dresses you</a><a href="#drip">$FIT</a></div>
+  <button class="chip" id="navCa" type="button" title="copy the $FIT contract address"><b>$FIT</b> <span id="ca">—</span></button>
+  <button class="btn sm" id="navConnect" type="button">connect</button>
+</div></nav>
+
+<main id="top">
+<header class="hero wrap">
+  <div>
+    <h1>your bags,<br>your <em>fit.</em></h1>
+    <p class="lede">Paste any Solana wallet. You get a pixel character dressed in what it holds: <b>biggest bag on the hoodie</b>, dead coins stitched on, the 24h move on your face.</p>
+    <form class="dress" id="dress" autocomplete="off">
+      <input id="addrIn" name="w" spellcheck="false" placeholder="paste a wallet address" aria-label="wallet address">
+      <button type="submit">dress me</button>
+    </form>
+    <div class="or"><button class="btn alt sm" id="connect" type="button">or connect wallet</button><span>reads your bags. signs nothing.</span></div>
+    <div class="err" id="err" role="status"></div>
+  </div>
+  <div class="room">
+    <div class="rail"></div>
+    <div class="stage"><canvas id="stage" class="px" width="96" height="104" aria-label="your fit"></canvas></div>
+    <div class="receipt box" id="receipt">
+      <div class="who"><h2 id="name">the mannequin</h2><span class="state" id="state">waiting</span></div>
+      <div class="addr" id="addr">no wallet yet</div>
+      <div class="rows">
+        <div><span>biggest bag · hoodie</span><b id="rTop">—</b></div>
+        <div><span>live bags · patches</span><b id="rBags">—</b></div>
+        <div><span>dead coins · stitched</span><b id="rDead">—</b></div>
+        <div><span>24h move · face</span><b id="rMove">—</b></div>
+        <div><span>bags worth</span><b id="rWorth">—</b></div>
+      </div>
+      <div class="actions">
+        <button class="btn sm" id="savePfp" type="button" disabled>save pfp</button>
+        <button class="btn sm lime" id="saveBanner" type="button" disabled>save banner</button>
+        <a class="btn sm alt" id="post" href="#" target="_blank" rel="noopener">post on x</a>
+      </div>
+      <div class="src" id="src">prices live from dexscreener · bags read from chain</div>
+    </div>
+  </div>
+</header>
+
+<section class="sec wrap" id="how">
+  <h2 class="t"><span>01 / how it dresses you</span>four rules. no stylist.</h2>
+  <div class="rules">
+    <div class="rule box"><canvas class="px" width="64" height="56" data-r="0" aria-hidden="true"></canvas><div class="in2"><div class="k">your biggest bag</div><h3>the hoodie</h3><p>Its ticker is printed on your chest. The colourway comes from its contract address, so every coin has its own.</p></div></div>
+    <div class="rule box"><canvas class="px" width="64" height="56" data-r="1" aria-hidden="true"></canvas><div class="in2"><div class="k">your next 3 bags</div><h3>coin patches</h3><p>One patch per bag, colour picked by its contract. Bags worth under $1 don't count.</p></div></div>
+    <div class="rule box"><canvas class="px" width="64" height="56" data-r="2" aria-hidden="true"></canvas><div class="in2"><div class="k">your dead coins</div><h3>stitched on</h3><p>Any coin you still hold with no market, or under $1k of liquidity, is a grey stitched patch. Up to four show.</p></div></div>
+    <div class="rule box"><canvas class="px" width="64" height="56" data-r="3" aria-hidden="true"></canvas><div class="in2"><div class="k">your 24h move</div><h3>the face</h3><p>Value-weighted 24h change of your live bags. Down 10%: tears. Flat: shades. Up 10%: grin. Up 30%: gold chain.</p></div></div>
+  </div>
+</section>
+
+<section class="sec wrap" id="drip">
+  <h2 class="t"><span>02 / $FIT</span>hold $20. get drip.</h2>
+  <div class="drip">
+    <div class="box">
+      <p>Every fit is free. Wallets holding <b>$20 or more of $FIT</b> get drip, checked in the same scan:</p>
+      <ul class="perks">
+        <li>gold trim on your fitting room and outline</li>
+        <li>animated sparkles on the stage</li>
+        <li>the 1500 × 500 banner export for your X header</li>
+      </ul>
+      <div class="ca"><span>contract</span><button class="chip" id="caBtn" type="button"><span id="ca2">—</span></button><a class="btn sm alt hidden" id="buy" href="#" target="_blank" rel="noopener">buy $FIT</a></div>
+    </div>
+    <div class="stats">
+      <div class="stat box"><div class="l">$FIT price</div><div class="v" id="fPrice">—</div></div>
+      <div class="stat box"><div class="l">market cap</div><div class="v" id="fCap">—</div></div>
+      <div class="stat box"><div class="l">liquidity</div><div class="v" id="fLiq">—</div></div>
+      <div class="stat box"><div class="l">your $FIT</div><div class="v" id="fYou">—</div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <a class="brand" href="#top">fit</a>
+  <span>prices from dexscreener · bags read from chain · nothing is signed</span>
+  <span><a href="https://github.com/leontineidewall-oss/fit" target="_blank" rel="noopener">code</a></span>
+</div></footer>
+
+<dialog id="wdlg">
+  <h3>pick a wallet</h3>
+  <div class="wl" id="wl"></div>
+  <p class="note" id="wnone">No Solana wallet found in this browser. Install Phantom, Solflare or Backpack, then reload. Or paste an address instead.</p>
+  <form method="dialog"><button class="btn alt sm" style="margin-top:12px">close</button></form>
+</dialog>
+
+<script>
+// fit pixel engine: one source for the page, the share images and /api/og
+// (inlined into index.html by build.py; required by api/og.js in node)
+(function (root) {
+  var OL = 0x14121a, WHITE = 0xf6f4ff, BROWN = 0x7a3a2c, TEAR = 0x5bc4ff, GOLD = 0xffd34d, GOLDD = 0xc9861c, GOLDL = 0xfff1a8;
+  var PINK = 0xff3d8b, PINKL = 0xff5ca0, PINKD = 0xf03482, LIME = 0xb9ff3b, GREY = 0x9a98a6, GREYD = 0x6e6c7a, PAPER = 0xececf0, PAPERD = 0xe2e2e8;
+  // hoodie colourways [base, shade, light]; the biggest bag's mint picks one
+  var HOODIES = [[0xb9ff3b, 0x7cc41a, 0xe2ff9e], [0x8e6bff, 0x5f43d1, 0xbba8ff], [0xff9a2e, 0xd06a10, 0xffc77d], [0x45c2ff, 0x1f8ad0, 0xa6e4ff],
+    [0xff4f9a, 0xc82a6c, 0xffa3c8], [0x2fd38a, 0x179a5f, 0x8ff0c2], [0xffd34d, 0xc9a01c, 0xfff1a8], [0xf4f4f6, 0xc4c4ce, 0xffffff], [0x2b2a33, 0x18171d, 0x45434f], [0xff5a4e, 0xc7342b, 0xff9d95]];
+  var MANNEQUIN = [0xc9c8d2, 0xa6a5b2, 0xe2e1ea];
+  var CAPS = [[0x1d1b24, 0x0e0d12, 0x3a3745], [0xff3d8b, 0xc21f63, 0xff8fbd], [0xf4f4f6, 0xc9c9d2, 0xffffff], [0x3fa7ff, 0x1f6fc0, 0x9fd3ff], [0x2fd38a, 0x179a5f, 0x8ff0c2], [0xff8a1f, 0xc95f08, 0xffbf80]];
+  var SKINS = [[0xf0b98f, 0xcf8f68, 0xffd6b3], [0xd99a6c, 0xb07448, 0xf2bf96], [0xa86a45, 0x82502f, 0xc98b62], [0x7a4a2e, 0x5c3520, 0x9a6444]];
+  var COINS = [0xff8a1f, 0x3fa7ff, 0xa374ff, 0x2fd38a, 0xffd34d, 0xff4f9a, 0x45e0d0, 0xff5a4e];
+  var N1 = ["oversized", "vintage", "limited", "thrifted", "custom", "bootleg", "archive", "sample", "one-off", "deadstock", "washed", "cropped"];
+  var N2 = ["hoodie", "drip", "fit", "jacket", "tee", "cap", "sneaker", "tag", "stitch", "zip", "denim", "fleece"];
+  var BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+
+  function hash(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function traits(addr) {
+    var h = hash(addr || "fit");
+    return { cap: h % CAPS.length, skin: (h >>> 4) % SKINS.length, mirror: !!((h >>> 7) & 1), name: N1[(h >>> 8) % N1.length] + " " + N2[(h >>> 13) % N2.length] };
+  }
+  function hoodieFor(mint) { return HOODIES[hash("h" + mint) % HOODIES.length]; }
+  function coinFor(mint) { return COINS[hash("c" + mint) % COINS.length]; }
+
+  function Grid(w, h, bg) { this.w = w; this.h = h; this.px = new Int32Array(w * h).fill(bg == null ? -1 : bg); }
+  Grid.prototype.set = function (x, y, c) {
+    x = Math.floor(x); y = Math.floor(y);
+    if (x < 0 || y < 0 || x >= this.w || y >= this.h || c == null) return;
+    this.px[y * this.w + x] = c;
+  };
+  Grid.prototype.get = function (x, y) { return x < 0 || y < 0 || x >= this.w || y >= this.h ? -1 : this.px[y * this.w + x]; };
+  Grid.prototype.rect = function (x, y, w, h, c) { for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) this.set(x + i, y + j, c); };
+  Grid.prototype.rgba = function (out) {
+    for (var i = 0; i < this.px.length; i++) {
+      var c = this.px[i];
+      if (c < 0) { out[i * 4 + 3] = 0; continue; }
+      out[i * 4] = (c >> 16) & 255; out[i * 4 + 1] = (c >> 8) & 255; out[i * 4 + 2] = c & 255; out[i * 4 + 3] = 255;
+    }
+    return out;
+  };
+  // 3x5 pixel font (rows joined, 15 cells per glyph)
+  var F3 = {
+    "A": ".#.#.#####.##.#",
+    "B": "##.#.###.#.###.",
+    "C": ".###..#..#...##",
+    "D": "##.#.##.##.###.",
+    "E": "####..##.#..###",
+    "F": "####..##.#..#..",
+    "G": ".###..#.##.#.##",
+    "H": "#.##.#####.##.#",
+    "I": "###.#..#..#.###",
+    "J": "..#..#..##.#.#.",
+    "K": "#.##.###.#.##.#",
+    "L": "#..#..#..#..###",
+    "M": "#.########.##.#",
+    "N": "##.#.##.##.##.#",
+    "O": ".#.#.##.##.#.#.",
+    "P": "##.#.###.#..#..",
+    "Q": ".#.#.##.###..##",
+    "R": "##.#.###.#.##.#",
+    "S": ".###...#...###.",
+    "T": "###.#..#..#..#.",
+    "U": "#.##.##.##.####",
+    "V": "#.##.##.##.#.#.",
+    "W": "#.##.########.#",
+    "X": "#.##.#.#.#.##.#",
+    "Y": "#.##.#.#..#..#.",
+    "Z": "###..#.#.#..###",
+    "0": "####.##.##.####",
+    "1": ".#.##..#..#.###",
+    "2": "##...#.#.#..###",
+    "3": "##...#.#...###.",
+    "4": "#.##.####..#..#",
+    "5": "####..##...###.",
+    "6": ".###..####.####",
+    "7": "###..#.#..#..#.",
+    "8": "####.#####.####",
+    "9": "####.####..###.",
+    "$": ".####..#..####.",
+    "?": "##...#.#.....#.",
+    "+": "....#.###.#....",
+    ".": ".............#.",
+    "-": "......###......",
+    ":": "....#.....#....",
+    "!": ".#..#..#.....#.",
+    "/": "..#..#.#.#..#..",
+    " ": "...............",
+    ",": "..........#.#..",
+    "%": "#.#..#.#.#..#.#",
+    "—": "......###......"
+  };
+
+  function textW(s, sc) { return s.length * 4 * sc - sc; }
+  function text(g, s, x, y, sc, col, shadow) {
+    s = String(s).toUpperCase(); sc = sc || 1;
+    for (var n = 0; n < s.length; n++) {
+      var gl = F3[s[n]] || F3["?"];
+      for (var j = 0; j < 5; j++) for (var i = 0; i < 3; i++) if (gl[j * 3 + i] === "#") {
+        if (shadow) g.rect(x + (n * 4 + i) * sc + sc, y + j * sc + sc, sc, sc, shadow);
+      }
+      for (var j2 = 0; j2 < 5; j2++) for (var i2 = 0; i2 < 3; i2++) if (gl[j2 * 3 + i2] === "#") g.rect(x + (n * 4 + i2) * sc, y + j2 * sc, sc, sc, col);
+    }
+  }
+
+  // ticker on the chest: A-Z 0-9 only, 2-6 chars, and never a word on the blocklist
+  var BLOCK = ["NIGG", "NIGA", "FAG", "KIKE", "SPIC", "CHINK", "RAPE", "NAZI", "HITLER", "KKK", "TRANNY", "RETARD", "CUNT", "PEDO"];
+  function cleanTicker(s) {
+    s = String(s || "").toUpperCase().replace(/^\$/, "");
+    if (!/^[A-Z0-9]{2,6}$/.test(s)) return null;
+    for (var i = 0; i < BLOCK.length; i++) if (s.indexOf(BLOCK[i]) >= 0) return null;
+    return s;
+  }
+
+  // the character: geometry in a 32 x 40 unit box, sampled at k px per unit, then outlined
+  // look = { hoodie:[c,d,l], cap:[c,d,l], skin:[c,d,l], face:"shades"|"cry"|"grin"|"blank", coins:[col..3], scars:0..4, chain, tag, ticker, mirror, gold }
+  function guy(g, x0, y0, k, look) {
+    var W = Math.floor(32 * k), H = Math.floor(44 * k), hc = look.hoodie, cc = look.cap, sk = look.skin, coins = look.coins || [], scars = look.scars || 0;
+    var buf = new Int32Array(W * H).fill(-1);
+    function el(x, y, cx, cy, rx, ry) { var a = (x - cx) / rx, b = (y - cy) / ry; return a * a + b * b <= 1; }
+    function ci(x, y, cx, cy, r) { return (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r; }
+    var SPOTS = [[7.2, 35.4], [24.8, 35.8], [9.8, 40.6]];
+    var SCARS = [[16.6, 37.6], [21.4, 40.4], [2.8, 39.8], [12.2, 41.2]];
+    for (var py = 0; py < H; py++) for (var px = 0; px < W; px++) {
+      var x = (px + 0.5) / k, y = (py + 0.5) / k, c = -1, i;
+      if (look.mirror) x = 32 - x;
+      if (y >= 26.5 && el(x, y, 16, 44, 15.6, 17.5)) {
+        c = hc[0];
+        if (!el(x, y, 15.2, 44.6, 14.4, 16.4)) c = x > 16 ? hc[1] : hc[2];
+        if (el(x, y, 16, 27.6, 7.4, 3.4) && !el(x, y, 16, 27.2, 4.4, 2.0)) c = hc[1];
+        if ((Math.abs(x - 13.2) < 0.55 || Math.abs(x - 18.8) < 0.55) && y > 28.5 && y < (look.ticker && k >= 1.25 ? 30.4 : 32.6)) c = WHITE;
+        if (Math.abs(x - 16) < 0.5 && y > 31 && !look.ticker) c = hc[1];
+        for (i = 0; i < Math.min(3, coins.length); i++) {
+          var sx = SPOTS[i][0], sy = SPOTS[i][1];
+          if (ci(x, y, sx, sy, 2.7)) c = ci(x, y, sx, sy, 2.0) ? coins[i] : OL;
+          if (ci(x, y, sx - 0.7, sy - 0.7, 0.8)) c = WHITE;
+        }
+        for (i = 0; i < Math.min(4, scars); i++) {
+          var ax = SCARS[i][0], ay = SCARS[i][1];
+          if (x > ax && x < ax + 6 && y > ay && y < ay + 3.4) {
+            c = GREY;
+            if (Math.abs((x - ax) - (y - ay) * 1.75) < 0.6 || Math.abs((ax + 6 - x) - (y - ay) * 1.75) < 0.6) c = OL;
+          }
+        }
+        if (look.chain && Math.hypot(x - 16, (y - 26) * 1.25) > 4.5 && Math.hypot(x - 16, (y - 26) * 1.25) < 5.8 && y > 27.5) c = GOLD;
+      }
+      if (x > 12.8 && x < 19.2 && y > 23 && y < 27.6 && c < 0) c = sk[1];
+      if (el(x, y, 16, 17, 8.4, 9.2) || ci(x, y, 7.7, 18.2, 1.7) || ci(x, y, 24.3, 18.2, 1.7)) {
+        c = sk[0];
+        if (x > 21.5 && !el(x, y, 15.4, 16.6, 8.0, 9.0)) c = sk[1];
+        if (el(x, y, 11.6, 13, 1.8, 1.2)) c = sk[2];
+      }
+      if (el(x, y, 16, 17, 8.4, 9.2)) {
+        var f = look.face;
+        if (f === "shades") {
+          if (y > 15.3 && y < 19.4 && x > 8.2 && x < 23.8 && !(x > 15.5 && x < 16.5 && y > 17.2)) c = OL;
+          if (y > 16.2 && y < 17.2 && ((x > 10 && x < 11.2) || (x > 18.4 && x < 19.6))) c = PINK;
+          if (y > 21.6 && y < 22.6 && x > 14 && x < 18.8) c = BROWN;
+          if (y > 20.6 && y < 21.6 && x > 18 && x < 19.2) c = BROWN;
+        } else if (f === "cry") {
+          if (ci(x, y, 12.4, 17.4, 1.3) || ci(x, y, 19.6, 17.4, 1.3)) c = OL;
+          if (ci(x, y, 12.0, 17.0, 0.45) || ci(x, y, 19.2, 17.0, 0.45)) c = WHITE;
+          if (y > 14.6 && y < 15.4 && ((x > 10.6 && x < 13.6) || (x > 18.4 && x < 21.4))) c = BROWN;
+          if (((x > 10.9 && x < 12.1) || (x > 19.9 && x < 21.1)) && y > 18.8 && y < 23) c = TEAR;
+          if (el(x, y, 16, 23.2, 2.2, 1.0) && y < 23.2) c = BROWN;
+        } else if (f === "grin") {
+          if (y > 16.6 && y < 17.6 && ((x > 10.8 && x < 13.8) || (x > 18.2 && x < 21.2))) c = OL;
+          if (y > 15.6 && y < 16.6 && ((x > 11.8 && x < 12.8) || (x > 19.2 && x < 20.2))) c = OL;
+          if (el(x, y, 16, 21, 3.6, 2.2) && y > 21) c = BROWN;
+          if (el(x, y, 16, 21, 3.0, 1.4) && y > 21 && y < 21.9) c = WHITE;
+        } else {
+          if (ci(x, y, 12.4, 17.6, 0.9) || ci(x, y, 19.6, 17.6, 0.9)) c = OL;
+          if (y > 21.8 && y < 22.6 && x > 14.2 && x < 17.8) c = BROWN;
+        }
+      }
+      if (el(x, y, 16, 10.6, 9.0, 6.6) && y < 11.4) {
+        c = cc[0];
+        if (x < 11 && y < 8) c = cc[2];
+        if (Math.abs(x - 16) < 0.5 && y < 10) c = cc[1];
+      }
+      if (el(x, y, 16, 11.6, 11.6, 1.7) && y > 10.6) c = y > 12 ? cc[1] : cc[0];
+      if (look.tag) {
+        if (x > 25.4 && x < 26.0 && y > 6.5 && y < 10.5) c = WHITE;
+        if (x > 25.0 && x < 30.6 && y > 10.2 && y < 16.4 && !(x > 29.6 && y < 11.2)) {
+          c = WHITE;
+          if (ci(x, y, 26.3, 11.5, 0.55)) c = OL;
+          if (x > 26.2 && x < 29.6 && ((y > 12.7 && y < 13.5) || (y > 14.5 && y < 15.3))) c = PINK;
+        }
+      }
+      buf[py * W + px] = c;
+    }
+    // ticker printed across the chest (only when there's room: k >= 1.25)
+    var tk = look.ticker && k >= 1.25 ? look.ticker : null;
+    if (tk) {
+      var tw = textW(tk, 1), tx = Math.round(16 * k - tw / 2), ty = Math.round(31.8 * k);
+      var ink = (hc[0] === 0x2b2a33) ? WHITE : OL;
+      for (var n = 0; n < tk.length; n++) {
+        var gl = F3[tk[n]] || F3["?"];
+        for (var j = 0; j < 5; j++) for (var ii = 0; ii < 3; ii++) if (gl[j * 3 + ii] === "#") { var bx = tx + n * 4 + ii, by = ty + j; if (bx >= 0 && bx < W && by < H) buf[by * W + bx] = ink; }
+      }
+    }
+    for (py = 0; py < H; py++) for (px = 0; px < W; px++) {
+      var v = buf[py * W + px];
+      if (v < 0) {
+        if ((px > 0 && buf[py * W + px - 1] >= 0) || (px < W - 1 && buf[py * W + px + 1] >= 0) || (py > 0 && buf[(py - 1) * W + px] >= 0) || (py < H - 1 && buf[(py + 1) * W + px] >= 0)) g.set(x0 + px, y0 + py, look.gold ? GOLDD : OL);
+      } else g.set(x0 + px, y0 + py, v);
+    }
+    return { w: W, h: H };
+  }
+
+  // the look for a scanned wallet. bags: [{mint, sym, usd, ch}] live, sorted by usd desc; dead: count; addr: wallet
+  function lookFor(addr, scan) {
+    var t = traits(addr);
+    var look = { cap: CAPS[t.cap], skin: SKINS[t.skin], mirror: false, tag: true, coins: [], scars: 0, face: "blank", hoodie: MANNEQUIN, ticker: null, chain: false, gold: false };
+    if (!scan) return look;
+    var bags = scan.bags || [];
+    if (bags.length) {
+      look.hoodie = hoodieFor(bags[0].mint);
+      look.ticker = cleanTicker(bags[0].sym);
+      look.coins = bags.slice(1, 4).map(function (b) { return coinFor(b.mint); });
+    }
+    look.scars = Math.min(4, scan.dead || 0);
+    var m = scan.move;
+    look.face = m == null ? (bags.length ? "shades" : "blank") : m <= -10 ? "cry" : m >= 10 ? "grin" : "shades";
+    look.chain = m != null && m >= 30;
+    look.gold = !!scan.drip;
+    return look;
+  }
+
+  // the fitting room: pink panel with a dithered glow, the character standing in it
+  function room(g, x0, y0, w, h, opts) {
+    opts = opts || {};
+    for (var y = y0; y < y0 + h; y++) for (var x = x0; x < x0 + w; x++) {
+      var d = Math.hypot(x - (x0 + w / 2), y - (y0 + h * 0.42)), c = PINK;
+      if (d < w * 0.36 && BAYER[y & 3][x & 3] < (w * 0.36 - d) * 0.9) c = PINKL;
+      if (((x - x0) % 8 === 0 || (y - y0) % 8 === 0) && c === PINK) c = PINKD;
+      g.set(x, y, c);
+    }
+    if (opts.gold) {
+      for (var i = 0; i < w; i++) { g.set(x0 + i, y0, GOLD); g.set(x0 + i, y0 + 1, GOLDD); g.set(x0 + i, y0 + h - 1, GOLD); g.set(x0 + i, y0 + h - 2, GOLDD); }
+      for (var j = 0; j < h; j++) { g.set(x0, y0 + j, GOLD); g.set(x0 + 1, y0 + j, GOLDD); g.set(x0 + w - 1, y0 + j, GOLD); g.set(x0 + w - 2, y0 + j, GOLDD); }
+    }
+  }
+  function sparkle(g, x, y, c) { g.set(x, y, WHITE); g.set(x + 1, y, c || 0xffd6e8); g.set(x - 1, y, c || 0xffd6e8); g.set(x, y + 1, c || 0xffd6e8); g.set(x, y - 1, c || 0xffd6e8); }
+
+  // a portrait: square room, character bottom-centred. used for the stage, the saved pfp and the favicon
+  function portrait(g, look, opts) {
+    opts = opts || {};
+    var N = g.w;
+    room(g, 0, 0, N, g.h, { gold: look.gold });
+    var k = opts.k || N / 43, gw = Math.floor(32 * k), gh = Math.floor(44 * k);
+    guy(g, Math.floor((N - gw) / 2) - 1, g.h - gh + Math.round(k * 0.5), k, look);
+    var ph = opts.phase || 0, spots = [[0.11, 0.16], [0.88, 0.46], [0.14, 0.62]];
+    if (opts.sparkles !== false) spots.forEach(function (s, i) { if (!look.gold || (ph + i * 4) % 12 < 8) sparkle(g, Math.round(N * s[0]), Math.round(g.h * s[1]), look.gold ? GOLDL : null); });
+  }
+
+  // the share banner (300 x 100, x5 = 1500 x 500): paper grid, codename, room on the right
+  function banner(g, look, name, line2) {
+    for (var y = 0; y < g.h; y++) for (var x = 0; x < g.w; x++) g.set(x, y, x % 10 === 0 || y % 10 === 0 ? PAPERD : PAPER);
+    var rx = 196, rw = 92, ry = 10;
+    for (var i = rx - 3; i < rx + rw + 3; i++) { g.set(i, ry - 1, OL); g.set(i, ry - 2, OL); }
+    var sub = new Grid(rw, g.h - ry);
+    portrait(sub, look, { k: 2.05 });
+    for (var yy = 0; yy < sub.h; yy++) for (var xx = 0; xx < sub.w; xx++) g.set(rx + xx, ry + yy, sub.px[yy * sub.w + xx]);
+    text(g, "FIT", 14, 16, 4, PINK);
+    text(g, name, 14, 46, 3, OL);
+    if (line2) text(g, line2, 14, 70, 2, GREYD);
+  }
+
+  // og / share card (240 x 126; x5 = 1200 x 630)
+  function og(g) {
+    for (var y = 0; y < g.h; y++) for (var x = 0; x < g.w; x++) g.set(x, y, x % 10 === 0 || y % 10 === 0 ? PAPERD : PAPER);
+    var look = { hoodie: HOODIES[0], cap: CAPS[0], skin: SKINS[0], face: "shades", coins: [0xff8a1f, 0x3fa7ff, 0xa374ff], scars: 1, tag: true, ticker: "FIT" };
+    var rx = 150, rw = 80, ry = 12;
+    for (var i = rx - 3; i < rx + rw + 3; i++) { g.set(i, ry - 1, OL); g.set(i, ry - 2, OL); }
+    var sub = new Grid(rw, g.h - ry); portrait(sub, look, { k: 2.2 });
+    for (var yy = 0; yy < sub.h; yy++) for (var xx = 0; xx < sub.w; xx++) g.set(rx + xx, ry + yy, sub.px[yy * sub.w + xx]);
+    text(g, "YOUR BAGS,", 12, 22, 3, OL);
+    text(g, "YOUR", 12, 44, 3, OL); text(g, "FIT.", 12 + textW("YOUR ", 3), 44, 3, PINK);
+    text(g, "PASTE ANY WALLET.", 12, 76, 1, GREYD);
+    text(g, "GET DRESSED IN YOUR BAGS.", 12, 84, 1, GREYD);
+  }
+
+  var api = { Grid: Grid, hash: hash, traits: traits, hoodieFor: hoodieFor, coinFor: coinFor, cleanTicker: cleanTicker, guy: guy, lookFor: lookFor,
+    room: room, portrait: portrait, banner: banner, og: og, text: text, textW: textW, HOODIES: HOODIES, CAPS: CAPS, SKINS: SKINS, MANNEQUIN: MANNEQUIN, F3: F3 };
+  if (typeof module !== "undefined" && module.exports) module.exports = api; else root.FIT = api;
+})(this);
+
+</script>
+<script>
+// fit app: paste or connect a wallet, read its token accounts, price them, dress the character
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var SITE = "https://fitsol.vercel.app";
+  var TOKEN = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", T22 = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+  var ADDR = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var MAX_MINTS = 150, DEAD_LIQ = 1000, MIN_BAG = 1, DRIP_USD = 20;
+  var CFG = { mint: null };
+  var S = { addr: null, scan: null, state: "wait", fit: null, phase: 0 };
+
+  function short(a) { return a ? a.slice(0, 4) + "…" + a.slice(-4) : ""; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function usd(v) { if (v == null || !isFinite(v)) return "—"; if (v === 0) return "$0.00"; if (v < 0.01) return "<$0.01"; if (v < 1) return "$" + v.toPrecision(2); if (v < 1e4) return "$" + v.toFixed(2); if (v < 1e6) return "$" + (v / 1e3).toFixed(1) + "k"; if (v < 1e9) return "$" + (v / 1e6).toFixed(2) + "m"; return "$" + (v / 1e9).toFixed(2) + "b"; }
+  function price(v) { if (v == null) return "—"; if (v >= 1) return "$" + v.toFixed(4); var s = v.toPrecision(3); return "$" + (s.indexOf("e") >= 0 ? Number(s).toFixed(12).replace(/0+$/, "") : s); }
+  function amt(n) { if (n == null || !isFinite(n)) return "—"; if (n >= 1e9) return (n / 1e9).toFixed(2) + "b"; if (n >= 1e6) return (n / 1e6).toFixed(2) + "m"; if (n >= 1e3) return (n / 1e3).toFixed(1) + "k"; return String(+n.toPrecision(4)); }
+  function pct(v) { return v == null ? "—" : (v > 0 ? "+" : "") + v.toFixed(1) + "%"; }
+  function clock(d) { return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase(); }
+  function err(m) { $("err").textContent = m || ""; }
+  function rpc(method, params) {
+    return fetch("/api/rpc", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ method: method, params: params }) })
+      .then(function (r) { return r.json().catch(function () { return { error: "rpc " + r.status }; }); })
+      .then(function (j) { if (j.error) throw new Error(typeof j.error === "string" ? j.error : (j.error.message || "rpc error")); return j.result; });
+  }
+  function prices(mints) {
+    var chunks = [];
+    for (var i = 0; i < mints.length; i += 30) chunks.push(mints.slice(i, i + 30));
+    return Promise.all(chunks.map(function (c) {
+      return fetch("/api/prices?mints=" + c.join(",")).then(function (r) { if (!r.ok) throw new Error("market " + r.status); return r.json(); });
+    })).then(function (rs) { var out = {}; rs.forEach(function (r) { for (var k in r.prices) out[k] = r.prices[k]; }); return out; });
+  }
+
+  // ---------- read + price + classify one wallet ----------
+  function holdings(addr) {
+    var q = function (pid) { return rpc("getTokenAccountsByOwner", [addr, { programId: pid }, { encoding: "jsonParsed", commitment: "confirmed" }]); };
+    return Promise.all([q(TOKEN), q(T22)]).then(function (rs) {
+      var by = {};
+      rs.forEach(function (r) {
+        ((r && r.value) || []).forEach(function (a) {
+          var info = a.account && a.account.data && a.account.data.parsed && a.account.data.parsed.info;
+          if (!info || !info.tokenAmount) return;
+          var ui = Number(info.tokenAmount.uiAmountString != null ? info.tokenAmount.uiAmountString : info.tokenAmount.uiAmount) || 0;
+          if (ui <= 0 || info.tokenAmount.decimals === 0) return;   // empty accounts and nfts don't count
+          by[info.mint] = (by[info.mint] || 0) + ui;
+        });
+      });
+      return by;
+    });
+  }
+  function scan(addr) {
+    return holdings(addr).then(function (by) {
+      var all = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; });
+      var mints = all.slice(0, MAX_MINTS);
+      if (CFG.mint && by[CFG.mint] && mints.indexOf(CFG.mint) < 0) mints.push(CFG.mint);
+      var ask = mints.slice(); if (CFG.mint && ask.indexOf(CFG.mint) < 0) ask.push(CFG.mint);
+      return (ask.length ? prices(ask) : Promise.resolve({})).then(function (P) {
+        var bags = [], dead = 0, fit = null;
+        mints.forEach(function (m) {
+          var p = P[m], ui = by[m];
+          if (!p || p.priceUsd == null || p.liquidityUsd < DEAD_LIQ) { dead++; return; }
+          var v = ui * p.priceUsd;
+          if (v >= MIN_BAG) bags.push({ mint: m, sym: p.sym, usd: v, ch: p.ch24, ui: ui });
+        });
+        bags.sort(function (a, b) { return b.usd - a.usd; });
+        var w = 0, wc = 0, worth = 0;
+        bags.forEach(function (b) { worth += b.usd; if (b.ch != null) { w += b.usd; wc += b.usd * b.ch; } });
+        if (CFG.mint) {
+          var fp = P[CFG.mint], fu = by[CFG.mint] || 0;
+          fit = { ui: fu, usd: fp && fp.priceUsd != null ? fu * fp.priceUsd : null };
+          S.fitMarket = fp || null; S.fitAt = new Date();
+        }
+        return { bags: bags, dead: dead, move: w > 0 ? wc / w : null, worth: worth, tokens: all.length, checked: mints.length, fit: fit,
+          drip: !!(fit && fit.usd != null && fit.usd >= DRIP_USD), at: new Date() };
+      });
+    });
+  }
+
+  // ---------- drawing ----------
+  function paint(cv, g) { var c = cv.getContext("2d"), img = c.createImageData(g.w, g.h); g.rgba(img.data); c.putImageData(img, 0, 0); }
+  function look() { return FIT.lookFor(S.addr || "mannequin", S.scan); }
+  function drawStage() {
+    var g = new FIT.Grid(96, 104);
+    FIT.portrait(g, look(), { phase: S.phase });
+    paint($("stage"), g);
+  }
+  function loop() {
+    if (S.scan && S.scan.drip && !REDUCED && !document.hidden) { S.phase++; drawStage(); }
+    setTimeout(loop, 160);
+  }
+
+  function render() {
+    var sc = S.scan, st = $("state");
+    $("name").textContent = S.addr ? FIT.traits(S.addr).name : "the mannequin";
+    $("addr").textContent = S.addr || "no wallet yet";
+    st.className = "state" + (S.state === "ok" ? (sc && sc.drip ? " drip" : " live") : S.state === "fail" ? " err" : "");
+    st.textContent = S.state === "ok" ? (sc && sc.drip ? "drip" : "dressed") : S.state === "busy" ? "checking…" : S.state === "fail" ? "—" : "waiting";
+    var top = sc && sc.bags[0];
+    $("rTop").textContent = !sc ? "—" : top ? "$" + (FIT.cleanTicker(top.sym) || top.sym || "?").toUpperCase() + " · " + usd(top.usd) : "nothing in the bag";
+    $("rBags").textContent = !sc ? "—" : String(sc.bags.length);
+    $("rDead").textContent = !sc ? "—" : String(sc.dead);
+    var mv = $("rMove"); mv.textContent = sc ? pct(sc.move) : "—"; mv.className = sc && sc.move != null ? (sc.move >= 0 ? "up" : "down") : "";
+    $("rWorth").textContent = sc ? usd(sc.worth) : "—";
+    $("src").textContent = sc ? "prices live from dexscreener · " + clock(sc.at) + (sc.tokens > sc.checked ? " · checked " + sc.checked + " of " + sc.tokens + " tokens" : "") : "prices live from dexscreener · bags read from chain";
+    $("savePfp").disabled = !sc;
+    var sb = $("saveBanner");
+    sb.disabled = !(sc && sc.drip);
+    sb.textContent = sc && sc.drip ? "save banner" : "banner · drip only";
+    var name = S.addr ? FIT.traits(S.addr).name : null;
+    var tk = top ? FIT.cleanTicker(top.sym) : null;
+    var txt = name ? "my fit: \"" + name + "\"." + (tk ? " biggest bag $" + tk + "," : "") + " " + (sc ? sc.dead : 0) + " dead coins stitched on. get dressed in your bags:" : "your bags, your fit. get dressed:";
+    $("post").href = "https://x.com/intent/post?text=" + encodeURIComponent(txt) + "&url=" + encodeURIComponent(SITE + (S.addr ? "/?w=" + S.addr : ""));
+    renderFit();
+    drawStage();
+  }
+  function renderFit() {
+    var m = S.fitMarket;
+    $("fPrice").textContent = m ? price(m.priceUsd) : "—";
+    $("fCap").textContent = m ? usd(m.marketCapUsd) : "—";
+    $("fLiq").textContent = m ? usd(m.liquidityUsd) : "—";
+    var f = S.scan && S.scan.fit;
+    $("fYou").textContent = !f ? "—" : f.ui ? amt(f.ui) + (f.usd != null ? " · " + usd(f.usd) : "") : "0";
+  }
+
+  function check(addr) {
+    err("");
+    S.addr = addr; S.scan = null; S.state = "busy"; render();
+    var mine = addr;
+    return scan(addr).then(function (sc) {
+      if (S.addr !== mine) return;
+      S.scan = sc; S.state = "ok"; render();
+    }).catch(function (e) {
+      if (S.addr !== mine) return;
+      S.state = "fail"; render();
+      err("couldn't read that wallet right now (" + (e && e.message ? e.message : "error") + ").");
+    });
+  }
+
+  // ---------- saving ----------
+  function download(g, scale, name) {
+    var small = document.createElement("canvas"); small.width = g.w; small.height = g.h; paint(small, g);
+    var big = document.createElement("canvas"); big.width = g.w * scale; big.height = g.h * scale;
+    var bx = big.getContext("2d"); bx.imageSmoothingEnabled = false; bx.drawImage(small, 0, 0, big.width, big.height);
+    big.toBlob(function (b) { var a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove(); });
+  }
+  $("savePfp").addEventListener("click", function () {
+    if (!S.scan) return;
+    var g = new FIT.Grid(120, 120); FIT.portrait(g, look(), { phase: 0 }); download(g, 9, "my-fit.png");
+  });
+  $("saveBanner").addEventListener("click", function () {
+    if (!S.scan || !S.scan.drip) return;
+    var top = S.scan.bags[0], tk = top ? FIT.cleanTicker(top.sym) : null;
+    var g = new FIT.Grid(300, 100);
+    FIT.banner(g, look(), FIT.traits(S.addr).name, (tk ? "$" + tk + " - " : "") + S.scan.dead + " DEAD COIN" + (S.scan.dead === 1 ? "" : "S"));
+    download(g, 5, "my-fit-banner.png");
+  });
+
+  // ---------- inputs ----------
+  $("dress").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("addrIn").value.trim();
+    if (!ADDR.test(v)) { err("that's not a solana wallet address."); return; }
+    history.replaceState(null, "", "?w=" + v);
+    check(v);
+  });
+
+  // ---------- wallet (read the address only; nothing is ever signed) ----------
+  var wallets = [];
+  var api = { register: function () {
+    for (var i = 0; i < arguments.length; i++) {
+      var w = arguments[i];
+      if (w && w.features && w.features["standard:connect"] && (w.chains || []).some(function (c) { return c.indexOf("solana:") === 0; }) && wallets.indexOf(w) < 0) wallets.push(w);
+    }
+    return function () {};
+  } };
+  window.addEventListener("wallet-standard:register-wallet", function (e) { try { e.detail(api); } catch (x) {} });
+  try { window.dispatchEvent(new CustomEvent("wallet-standard:app-ready", { detail: api })); } catch (x) {}
+  function connect(w) {
+    return w.features["standard:connect"].connect().then(function (out) {
+      var acc = ((out && out.accounts) || w.accounts || [])[0];
+      if (!acc) throw new Error("no account");
+      $("navConnect").textContent = short(acc.address);
+      $("addrIn").value = acc.address;
+      history.replaceState(null, "", location.pathname);
+      return check(acc.address);
+    }).catch(function (e) { err("wallet didn't connect: " + (e && e.message ? e.message : "declined")); });
+  }
+  function pick() {
+    if (wallets.length === 1) return connect(wallets[0]);
+    var box = $("wl"); box.innerHTML = "";
+    wallets.forEach(function (w) {
+      var b = document.createElement("button"); b.type = "button";
+      b.innerHTML = (w.icon ? '<img alt="" src="' + esc(w.icon) + '">' : "") + "<span>" + esc(w.name) + "</span>";
+      b.addEventListener("click", function () { $("wdlg").close(); connect(w); });
+      box.appendChild(b);
+    });
+    $("wnone").classList.toggle("hidden", wallets.length > 0);
+    $("wdlg").showModal();
+  }
+  $("navConnect").addEventListener("click", pick);
+  $("connect").addEventListener("click", pick);
+
+  // ---------- rule cards: the four rules drawn with the same engine ----------
+  var RULE_FACES = ["cry", "shades", "grin", "grin"], ruleTick = 0;
+  function ruleCard(n, t) {
+    var cv = document.querySelector('canvas[data-r="' + n + '"]'); if (!cv) return;
+    var g = new FIT.Grid(64, 56), k = 1.3;
+    FIT.room(g, 0, 0, 64, 56);
+    var lk = { hoodie: FIT.MANNEQUIN, cap: FIT.CAPS[n % FIT.CAPS.length], skin: FIT.SKINS[(n + 1) % FIT.SKINS.length], face: "shades", coins: [], scars: 0, tag: false };
+    if (n === 0) { lk.hoodie = FIT.HOODIES[0]; lk.ticker = "BAG"; }
+    if (n === 1) { lk.hoodie = FIT.HOODIES[1]; lk.coins = [0xff8a1f, 0x3fa7ff, 0x2fd38a]; }
+    if (n === 2) { lk.hoodie = FIT.HOODIES[8]; lk.scars = 4; lk.face = "blank"; }
+    if (n === 3) { var f = REDUCED ? 2 : t % 4; lk.hoodie = FIT.HOODIES[2]; lk.face = RULE_FACES[f]; lk.chain = f === 3; lk.gold = f === 3; }
+    FIT.guy(g, Math.floor((64 - 32 * k) / 2), 56 - Math.round(43 * k), k, lk);
+    paint(cv, g);
+  }
+  for (var r = 0; r < 4; r++) ruleCard(r, 0);
+  if (!REDUCED) setInterval(function () { if (!document.hidden) { ruleTick++; ruleCard(3, ruleTick); } }, 1200);
+
+  // ---------- boot ----------
+  (function () { var g = new FIT.Grid(36, 36); FIT.portrait(g, FIT.lookFor("fit", null), { k: 36 / 34, sparkles: false }); paint($("mark"), g); })();
+  function copyCa(el) {
+    if (!CFG.mint || !navigator.clipboard) return;
+    navigator.clipboard.writeText(CFG.mint).then(function () { var t = el.textContent; el.textContent = "copied"; setTimeout(function () { el.textContent = t; }, 1400); });
+  }
+  function loadFit() {
+    if (!CFG.mint) return Promise.resolve();
+    return prices([CFG.mint]).then(function (P) { S.fitMarket = P[CFG.mint] || null; S.fitAt = new Date(); renderFit(); }).catch(function () { renderFit(); });
+  }
+  fetch("/api/config").then(function (r) { return r.json(); }).then(function (j) { if (j) CFG = j; }).catch(function () {}).then(function () {
+    if (CFG.mint) {
+      $("ca").textContent = short(CFG.mint); $("ca2").textContent = CFG.mint;
+      $("navCa").addEventListener("click", function () { copyCa($("ca")); });
+      $("caBtn").addEventListener("click", function () { copyCa($("ca2")); });
+      $("buy").href = "https://dexscreener.com/solana/" + CFG.mint; $("buy").classList.remove("hidden");
+    }
+    render();
+    var q = new URLSearchParams(location.search).get("w");
+    if (q && ADDR.test(q)) { $("addrIn").value = q; check(q); }
+    return loadFit();
+  }).then(function () { setInterval(loadFit, 60000); });
+  render(); loop();
+  window.__fit = { S: S, cfg: function () { return CFG; } };
+})();
+
+</script>
+</body>
+</html>
