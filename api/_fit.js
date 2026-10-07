@@ -229,10 +229,11 @@
   // the fitting room: pink panel with a dithered glow, the character standing in it
   function room(g, x0, y0, w, h, opts) {
     opts = opts || {};
+    var B0 = opts.bg == null ? PINK : opts.bg, BL = opts.bg == null ? PINKL : tint(B0, 1.13), BD = opts.bg == null ? PINKD : tint(B0, 0.93);
     for (var y = y0; y < y0 + h; y++) for (var x = x0; x < x0 + w; x++) {
-      var d = Math.hypot(x - (x0 + w / 2), y - (y0 + h * 0.42)), c = PINK;
-      if (d < w * 0.36 && BAYER[y & 3][x & 3] < (w * 0.36 - d) * 0.9) c = PINKL;
-      if (((x - x0) % 8 === 0 || (y - y0) % 8 === 0) && c === PINK) c = PINKD;
+      var d = Math.hypot(x - (x0 + w / 2), y - (y0 + h * 0.42)), c = B0;
+      if (d < w * 0.36 && BAYER[y & 3][x & 3] < (w * 0.36 - d) * 0.9) c = BL;
+      if (((x - x0) % 8 === 0 || (y - y0) % 8 === 0) && c === B0) c = BD;
       g.set(x, y, c);
     }
     if (opts.gold) {
@@ -240,15 +241,20 @@
       for (var j = 0; j < h; j++) { g.set(x0, y0 + j, GOLD); g.set(x0 + 1, y0 + j, GOLDD); g.set(x0 + w - 1, y0 + j, GOLD); g.set(x0 + w - 2, y0 + j, GOLDD); }
     }
   }
+  function tint(c, f) { var r = Math.min(255, Math.round(((c >> 16) & 255) * f)), gg = Math.min(255, Math.round(((c >> 8) & 255) * f)), b = Math.min(255, Math.round((c & 255) * f)); return (r << 16) | (gg << 8) | b; }
+  // every wallet's card gets its own background colour
+  var TILES = [0xff3d8b, 0x45c2ff, 0xb9ff3b, 0xffd34d, 0xa374ff, 0xff8a1f, 0x2fd38a, 0xff5a4e, 0xf4f4f6, 0x8e6bff];
+  function tileFor(addr) { return TILES[hash("t" + addr) % TILES.length]; }
+  function numFor(addr) { return ("000" + (hash("n" + addr) % 10000)).slice(-4); }
   function sparkle(g, x, y, c) { g.set(x, y, WHITE); g.set(x + 1, y, c || 0xffd6e8); g.set(x - 1, y, c || 0xffd6e8); g.set(x, y + 1, c || 0xffd6e8); g.set(x, y - 1, c || 0xffd6e8); }
 
   // a portrait: square room, character bottom-centred. used for the stage, the saved pfp and the favicon
   function portrait(g, look, opts) {
     opts = opts || {};
     var N = g.w;
-    room(g, 0, 0, N, g.h, { gold: look.gold });
+    room(g, 0, 0, N, g.h, { gold: look.gold, bg: opts.bg });
     var k = opts.k || N / 43, gw = Math.floor(32 * k), gh = Math.floor(44 * k);
-    guy(g, Math.floor((N - gw) / 2) - 1, g.h - gh + Math.round(k * 0.5), k, look);
+    guy(g, Math.floor((N - gw) / 2) - 1, (opts.top != null ? opts.top : g.h - gh + Math.round(k * 0.5)) + (opts.bob || 0), k, look);
     var ph = opts.phase || 0, spots = [[0.11, 0.16], [0.88, 0.46], [0.14, 0.62]];
     if (opts.sparkles !== false) spots.forEach(function (s, i) { if (!look.gold || (ph + i * 4) % 12 < 8) sparkle(g, Math.round(N * s[0]), Math.round(g.h * s[1]), look.gold ? GOLDL : null); });
   }
@@ -281,6 +287,6 @@
   }
 
   var api = { Grid: Grid, hash: hash, traits: traits, hoodieFor: hoodieFor, coinFor: coinFor, cleanTicker: cleanTicker, guy: guy, lookFor: lookFor,
-    room: room, portrait: portrait, banner: banner, og: og, text: text, textW: textW, HOODIES: HOODIES, CAPS: CAPS, SKINS: SKINS, MANNEQUIN: MANNEQUIN, F3: F3 };
+    room: room, portrait: portrait, tileFor: tileFor, numFor: numFor, TILES: TILES, COINS: COINS, banner: banner, og: og, text: text, textW: textW, HOODIES: HOODIES, CAPS: CAPS, SKINS: SKINS, MANNEQUIN: MANNEQUIN, F3: F3 };
   if (typeof module !== "undefined" && module.exports) module.exports = api; else root.FIT = api;
 })(this);
